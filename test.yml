@@ -89,7 +89,7 @@
       image: CentOS-7-x86_64-GenericCloud
       flavor: small
       security_groups: default
-      key_name: mhatds
+      key_name: tuantds
       nics:
         # - net-id: "{{ testnet_network.id }}"
         #- net-id: a39b8f6c-cba2-493e-a777-eed61cabf70a
@@ -98,8 +98,8 @@
       userdata: |
         #cloud-config
 
-        user: tds2019
-        password: tds2019
+        user: tds2021
+        password: tds2021
         chpasswd: {expire: False}
 
         # Send pre-generated ssh private keys to the server (be sure to attach the
@@ -142,83 +142,83 @@
          - tee -a /etc/ssh/ssh_config <<< "        StrictHostKeyChecking no"
          - systemctl restart sshd
 
-         - echo 'get /home/tds2019/source.dta /home/tds2019/mhatds.dta' >> /home/tds2019/getdata
-         - echo 'put /home/tds2019/mhatds.dta /home/tds2019/target.dta' >> /home/tds2019/putdata
+         - echo 'get /home/tds2021/source.dta /home/tds2021/tuantds.dta' >> /home/tds2021/getdata
+         - echo 'put /home/tds2021/tuantds.dta /home/tds2021/target.dta' >> /home/tds2021/putdata
 
          - tee -a /usr/local/bin/runstep1.sh <<< "#!/bin/bash"
-         - tee -a /usr/local/bin/runstep1.sh <<< "echo '************ Processing step 1 ************' >> /var/log/mhatds.log"
-         - tee -a /usr/local/bin/runstep1.sh <<< 'echo "Processing step 1 on $(date)" >> /var/log/mhatds.log'
+         - tee -a /usr/local/bin/runstep1.sh <<< "echo '************ Processing step 1 ************' >> /var/log/logtds.log"
+         - tee -a /usr/local/bin/runstep1.sh <<< 'echo "Processing step 1 on $(date)" >> /var/log/logtds.log'
          - tee -a /usr/local/bin/runstep1.sh <<< "sleep 5"
-         - tee -a /usr/local/bin/runstep1.sh <<< 'sftp -i /etc/ssh/ssh_host_rsa_key -b /home/tds2019/getdata tds2019@192.168.1.5'
-         - tee -a /usr/local/bin/runstep1.sh <<< 'ssh -i /etc/ssh/ssh_host_rsa_key tds2019@192.168.1.5 "touch runstep1.txt"'
-         - tee -a /usr/local/bin/runstep1.sh <<< 'echo "Step 1 processes completed on $(date)" >> /home/tds2019/runstep1.log'
+         - tee -a /usr/local/bin/runstep1.sh <<< 'sftp -i /etc/ssh/ssh_host_rsa_key -b /home/tds2021/getdata tds2021@192.168.1.5'
+         - tee -a /usr/local/bin/runstep1.sh <<< 'ssh -i /etc/ssh/ssh_host_rsa_key tds2021@192.168.1.5 "touch runstep1.txt"'
+         - tee -a /usr/local/bin/runstep1.sh <<< 'echo "Step 1 processes completed on $(date)" >> /home/tds2021/runstep1.log'
          - tee -a /usr/local/bin/runstep1.sh <<< "sleep 20"
          - tee -a /usr/local/bin/runstep1.sh <<< "reboot"
          - chmod +x /usr/local/bin/runstep1.sh
 
          - tee -a /usr/local/bin/runstep2.sh <<< "#!/bin/bash"
-         - tee -a /usr/local/bin/runstep2.sh <<< "echo '************ Processing step 2 ************' >> /var/log/mhatds.log"
-         - tee -a /usr/local/bin/runstep2.sh <<< 'echo "Processing step 2 on $(date)" >> /var/log/mhatds.log'
+         - tee -a /usr/local/bin/runstep2.sh <<< "echo '************ Processing step 2 ************' >> /var/log/logtds.log"
+         - tee -a /usr/local/bin/runstep2.sh <<< 'echo "Processing step 2 on $(date)" >> /var/log/logtds.log'
          - tee -a /usr/local/bin/runstep2.sh <<< "sleep 20"
          - tee -a /usr/local/bin/runstep2.sh <<< 'pingcount=$(ping -c 3 192.168.2.20 | grep ttl | wc -l)'
          - tee -a /usr/local/bin/runstep2.sh <<< 'while [ $pingcount -eq "0" ]; do'
          - tee -a /usr/local/bin/runstep2.sh <<< "  sleep 10"
          - tee -a /usr/local/bin/runstep2.sh <<< '  pingcount=$(ping -c 3 192.168.2.20 | grep ttl | wc -l)'
          - tee -a /usr/local/bin/runstep2.sh <<< "done"
-         - tee -a /usr/local/bin/runstep2.sh <<< 'sftp -i /etc/ssh/ssh_host_rsa_key -b /home/tds2019/putdata tds2019@192.168.2.20' 
-         - tee -a /usr/local/bin/runstep2.sh <<< 'ssh -i /etc/ssh/ssh_host_rsa_key tds2019@192.168.2.20 "touch runstep2.txt"'
-         - tee -a /usr/local/bin/runstep2.sh <<< 'echo "Step 2 processes completed on $(date)" >> /home/tds2019/runstep2.log'
+         - tee -a /usr/local/bin/runstep2.sh <<< 'sftp -i /etc/ssh/ssh_host_rsa_key -b /home/tds2021/putdata tds2021@192.168.2.20' 
+         - tee -a /usr/local/bin/runstep2.sh <<< 'ssh -i /etc/ssh/ssh_host_rsa_key tds2021@192.168.2.20 "touch runstep2.txt"'
+         - tee -a /usr/local/bin/runstep2.sh <<< 'echo "Step 2 processes completed on $(date)" >> /home/tds2021/runstep2.log'
          - tee -a /usr/local/bin/runstep2.sh <<< "sleep 20"
          - tee -a /usr/local/bin/runstep2.sh <<< "reboot"
          - chmod +x /usr/local/bin/runstep2.sh
 
          - tee -a /usr/local/bin/runstep3.sh <<< "#!/bin/bash"
-         - tee -a /usr/local/bin/runstep3.sh <<< "echo '************ Processing step 3 ************' >> /var/log/mhatds.log"
-         - tee -a /usr/local/bin/runstep3.sh <<< 'echo "Processing step 3 on $(date)" >> /var/log/mhatds.log'
+         - tee -a /usr/local/bin/runstep3.sh <<< "echo '************ Processing step 3 ************' >> /var/log/logtds.log"
+         - tee -a /usr/local/bin/runstep3.sh <<< 'echo "Processing step 3 on $(date)" >> /var/log/logtds.log'
          - tee -a /usr/local/bin/runstep3.sh <<< "sleep 5"
-         - tee -a /usr/local/bin/runstep3.sh <<< 'echo "Step 3 processes completed on $(date)" >> /home/tds2019/runstep3.log'
+         - tee -a /usr/local/bin/runstep3.sh <<< 'echo "Step 3 processes completed on $(date)" >> /home/tds2021/runstep3.log'
          - tee -a /usr/local/bin/runstep3.sh <<< "sleep 20"
          - tee -a /usr/local/bin/runstep3.sh <<< "shutdown"
          - chmod +x /usr/local/bin/runstep3.sh
 
-         - tee -a /usr/local/bin/mhatds.sh <<< "#!/bin/bash"
-         - tee -a /usr/local/bin/mhatds.sh <<< 'echo "MHA TDS Controller Service --> $(date)" >> /var/log/mhatds.log'
-         - tee -a /usr/local/bin/mhatds.sh <<< "while true"
-         - tee -a /usr/local/bin/mhatds.sh <<< "do"
-         - tee -a /usr/local/bin/mhatds.sh <<< " echo 'Checking for TDS services to run...' >> /var/log/mhatds.log"
-         - tee -a /usr/local/bin/mhatds.sh <<< " if [ ! -f '/home/tds2019/runstep1.log' ]"
-         - tee -a /usr/local/bin/mhatds.sh <<< " then"
-         - tee -a /usr/local/bin/mhatds.sh <<< "  echo 'Running Step 1...' >> /var/log/mhatds.log"
-         - tee -a /usr/local/bin/mhatds.sh <<< "  /usr/local/bin/runstep1.sh"
-         - tee -a /usr/local/bin/mhatds.sh <<< " else"
-         - tee -a /usr/local/bin/mhatds.sh <<< "  if [ ! -f '/home/tds2019/runstep2.log' ]"
-         - tee -a /usr/local/bin/mhatds.sh <<< "  then"
-         - tee -a /usr/local/bin/mhatds.sh <<< "   echo 'Running Step 2...' >> /var/log/mhatds.log"
-         - tee -a /usr/local/bin/mhatds.sh <<< "   /usr/local/bin/runstep2.sh"
-         - tee -a /usr/local/bin/mhatds.sh <<< "  else"
-         - tee -a /usr/local/bin/mhatds.sh <<< "   if [ ! -f '/home/tds2019/runstep3.log' ]"
-         - tee -a /usr/local/bin/mhatds.sh <<< "   then"
-         - tee -a /usr/local/bin/mhatds.sh <<< "    echo 'Running Step 3...' >> /var/log/mhatds.log"
-         - tee -a /usr/local/bin/mhatds.sh <<< "    /usr/local/bin/runstep3.sh"
-         - tee -a /usr/local/bin/mhatds.sh <<< "   fi"
-         - tee -a /usr/local/bin/mhatds.sh <<< "  fi"
-         - tee -a /usr/local/bin/mhatds.sh <<< " fi"
-         - tee -a /usr/local/bin/mhatds.sh <<< " sleep 60"
-         - tee -a /usr/local/bin/mhatds.sh <<< "done"
-         - chmod +x /usr/local/bin/mhatds.sh
+         - tee -a /usr/local/bin/runtds.sh <<< "#!/bin/bash"
+         - tee -a /usr/local/bin/runtds.sh <<< 'echo "MHA TDS Controller Service --> $(date)" >> /var/log/logtds.log'
+         - tee -a /usr/local/bin/runtds.sh <<< "while true"
+         - tee -a /usr/local/bin/runtds.sh <<< "do"
+         - tee -a /usr/local/bin/runtds.sh <<< " echo 'Checking for TDS services to run...' >> /var/log/logtds.log"
+         - tee -a /usr/local/bin/runtds.sh <<< " if [ ! -f '/home/tds2021/runstep1.log' ]"
+         - tee -a /usr/local/bin/runtds.sh <<< " then"
+         - tee -a /usr/local/bin/runtds.sh <<< "  echo 'Running Step 1...' >> /var/log/logtds.log"
+         - tee -a /usr/local/bin/runtds.sh <<< "  /usr/local/bin/runstep1.sh"
+         - tee -a /usr/local/bin/runtds.sh <<< " else"
+         - tee -a /usr/local/bin/runtds.sh <<< "  if [ ! -f '/home/tds2021/runstep2.log' ]"
+         - tee -a /usr/local/bin/runtds.sh <<< "  then"
+         - tee -a /usr/local/bin/runtds.sh <<< "   echo 'Running Step 2...' >> /var/log/logtds.log"
+         - tee -a /usr/local/bin/runtds.sh <<< "   /usr/local/bin/runstep2.sh"
+         - tee -a /usr/local/bin/runtds.sh <<< "  else"
+         - tee -a /usr/local/bin/runtds.sh <<< "   if [ ! -f '/home/tds2021/runstep3.log' ]"
+         - tee -a /usr/local/bin/runtds.sh <<< "   then"
+         - tee -a /usr/local/bin/runtds.sh <<< "    echo 'Running Step 3...' >> /var/log/logtds.log"
+         - tee -a /usr/local/bin/runtds.sh <<< "    /usr/local/bin/runstep3.sh"
+         - tee -a /usr/local/bin/runtds.sh <<< "   fi"
+         - tee -a /usr/local/bin/runtds.sh <<< "  fi"
+         - tee -a /usr/local/bin/runtds.sh <<< " fi"
+         - tee -a /usr/local/bin/runtds.sh <<< " sleep 30"
+         - tee -a /usr/local/bin/runtds.sh <<< "done"
+         - chmod +x /usr/local/bin/runtds.sh
 
-         - tee -a /etc/systemd/system/mhatds.service <<< "[Unit]"
-         - tee -a /etc/systemd/system/mhatds.service <<< "Description=Description for sample script goes here"
-         - tee -a /etc/systemd/system/mhatds.service <<< "After=network.target"
-         - tee -a /etc/systemd/system/mhatds.service <<< "[Service]"
-         - tee -a /etc/systemd/system/mhatds.service <<< "Type=idle"
-         - tee -a /etc/systemd/system/mhatds.service <<< "ExecStart=/usr/local/bin/mhatds.sh"
-         - tee -a /etc/systemd/system/mhatds.service <<< "TimeoutStartSec=0"
-         - tee -a /etc/systemd/system/mhatds.service <<< "[Install]"
-         - tee -a /etc/systemd/system/mhatds.service <<< "WantedBy=multi-user.target"
+         - tee -a /etc/systemd/system/tuantds.service <<< "[Unit]"
+         - tee -a /etc/systemd/system/tuantds.service <<< "Description=Description for sample script goes here"
+         - tee -a /etc/systemd/system/tuantds.service <<< "After=network.target"
+         - tee -a /etc/systemd/system/tuantds.service <<< "[Service]"
+         - tee -a /etc/systemd/system/tuantds.service <<< "Type=idle"
+         - tee -a /etc/systemd/system/tuantds.service <<< "ExecStart=/usr/local/bin/runtds.sh"
+         - tee -a /etc/systemd/system/tuantds.service <<< "TimeoutStartSec=0"
+         - tee -a /etc/systemd/system/tuantds.service <<< "[Install]"
+         - tee -a /etc/systemd/system/tuantds.service <<< "WantedBy=multi-user.target"
          - systemctl daemon-reload
-         - systemctl enable mhatds.service
-         - systemctl start mhatds.service
+         - systemctl enable tuantds.service
+         - systemctl start tuantds.service
     register: testServer
 
   - name: Show Server's IP
